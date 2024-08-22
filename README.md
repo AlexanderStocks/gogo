@@ -1,2 +1,2 @@
 # GoGo
-A Go interpreter written in go 
+A Go interpreter written in Go. 

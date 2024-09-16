@@ -44,6 +44,7 @@ The interpreter works by:
 
 The project follows idiomatic Go project structure and organizes code into packages for clarity and maintainability.
 
+```go
 GoGo/
 ├── cmd/
 │   └── main.go
@@ -66,6 +67,7 @@ GoGo/
 │   └── test3.go
 ├── go.mod
 └── README.md
+```
 
 - **`cmd/main.go`**: Entry point of the interpreter.
 - **`internal/evaluator/`**: Contains the evaluation logic, split into multiple files for readability.

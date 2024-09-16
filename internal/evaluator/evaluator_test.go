@@ -15,13 +15,13 @@ func TestEvalExpressions(t *testing.T) {
 		expected interface{}
 	}{
 		{"1 + 2", int64(3)},
-		// {"10 - 5", int64(5)},
-		// {"2 * 3", int64(6)},
-		// {"8 / 2", int64(4)},
-		// {"5 > 2", true},
-		// {"5 < 2", false},
-		// {"3 == 3", true},
-		// {"3 != 4", true},
+		{"10 - 5", int64(5)},
+		{"2 * 3", int64(6)},
+		{"8 / 2", int64(4)},
+		{"5 > 2", true},
+		{"5 < 2", false},
+		{"3 == 3", true},
+		{"3 != 4", true},
 		// {`"hello" + " " + "world"`, "hello world"},
 	}
 

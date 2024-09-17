@@ -109,3 +109,42 @@ func applyStringOp(left, right string, op token.Token) (interface{}, error) {
 		return nil, fmt.Errorf("unsupported operator for strings: %v", op)
 	}
 }
+
+func evalUnaryExpr(expr *ast.UnaryExpr, fset *token.FileSet, env *runtime.Environment) (interface{}, error) {
+	x, err := evalExpr(expr.X, fset, env)
+	if err != nil {
+		return nil, err
+	}
+	return applyUnaryOp(x, expr.Op)
+}
+
+func applyUnaryOp(x interface{}, op token.Token) (interface{}, error) {
+	v := reflect.ValueOf(x)
+
+	switch v.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return applyIntUnaryOp(v.Int(), op)
+	case reflect.Float32, reflect.Float64:
+		return applyFloatUnaryOp(v.Float(), op)
+	default:
+		return nil, fmt.Errorf("unsupported type: %s", v.Kind())
+	}
+}
+
+func applyIntUnaryOp(x int64, op token.Token) (interface{}, error) {
+	switch op {
+	case token.SUB:
+		return -x, nil
+	default:
+		return nil, fmt.Errorf("unsupported operator for ints: %v", op)
+	}
+}
+
+func applyFloatUnaryOp(x float64, op token.Token) (interface{}, error) {
+	switch op {
+	case token.SUB:
+		return -x, nil
+	default:
+		return nil, fmt.Errorf("unsupported operator for floats: %v", op)
+	}
+}

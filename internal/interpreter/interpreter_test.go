@@ -11,7 +11,7 @@ import (
 func TestRunFile(t *testing.T) {
 	testFiles := []string{
 		"../../testdata/test1.go",
-		// "../../testdata/test2.go",
+		"../../testdata/test2.go",
 		// "../../testdata/test3.go",
 	}
 

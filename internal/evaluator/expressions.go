@@ -25,8 +25,8 @@ func evalExpr(expr ast.Expr, fset *token.FileSet, env *runtime.Environment) (int
 		return evalBinaryExpr(e, fset, env)
 	case *ast.CallExpr:
 		return evalCallExpr(e, fset, env)
-	// case *ast.UnaryExpr:
-	//     return evalUnaryExpr(e, fset, env)
+	case *ast.UnaryExpr:
+		return evalUnaryExpr(e, fset, env)
 	default:
 		return nil, fmt.Errorf("unsupported expression type: %T", e)
 	}
@@ -35,21 +35,18 @@ func evalExpr(expr ast.Expr, fset *token.FileSet, env *runtime.Environment) (int
 func evalBasicLit(lit *ast.BasicLit) (interface{}, error) {
 	switch lit.Kind {
 	case token.INT:
-		// Parse integer literals
 		value, err := strconv.ParseInt(lit.Value, 0, 64)
 		if err != nil {
 			return nil, err
 		}
 		return value, nil
 	case token.STRING:
-		// Unquote string literals
 		value, err := strconv.Unquote(lit.Value)
 		if err != nil {
 			return nil, err
 		}
 		return value, nil
 	case token.FLOAT:
-		// Parse float literals
 		value, err := strconv.ParseFloat(lit.Value, 64)
 		if err != nil {
 			return nil, err

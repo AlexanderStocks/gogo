@@ -26,8 +26,8 @@ func evalStmt(stmt ast.Stmt, fset *token.FileSet, env *runtime.Environment) erro
 			fmt.Println(res)
 		}
 		return err
-	// case *ast.AssignStmt:
-	// 	return evalAssignStmt(s, fset, env)
+	case *ast.AssignStmt:
+		return evalAssignStmt(s, fset, env)
 	case *ast.DeclStmt:
 		return evalDeclStmt(s, fset, env)
 	// case *ast.IfStmt:

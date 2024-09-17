@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"reflect"
 
 	"github.com/AlexanderStocks/GoGo/internal/runtime"
 )
@@ -17,86 +18,94 @@ func evalBinaryExpr(expr *ast.BinaryExpr, fset *token.FileSet, env *runtime.Envi
 	if err != nil {
 		return nil, err
 	}
-	switch expr.Op {
-	case token.ADD:
-		return add(left, right)
-	case token.SUB:
-		return sub(left, right)
-	case token.MUL:
-		return mul(left, right)
-	case token.QUO:
-		return quo(left, right)
-	case token.EQL:
-		return eql(left, right)
-	case token.LSS:
-		return lss(left, right)
-	case token.GTR:
-		return gtr(left, right)
-	case token.NEQ:
-		return neq(left, right)
+	return applyOperation(left, right, expr.Op)
+}
+
+func applyOperation(left, right interface{}, op token.Token) (interface{}, error) {
+	lv := reflect.ValueOf(left)
+	rv := reflect.ValueOf(right)
+
+	if lv.Kind() != rv.Kind() {
+		return nil, fmt.Errorf("type mismatch: %s vs %s", lv.Kind(), rv.Kind())
+	}
+
+	switch lv.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return applyIntOp(lv.Int(), rv.Int(), op)
+	case reflect.Float32, reflect.Float64:
+		return applyFloatOp(lv.Float(), rv.Float(), op)
+	case reflect.String:
+		return applyStringOp(lv.String(), rv.String(), op)
 	default:
-		return nil, fmt.Errorf("unsupported binary operator: %v", expr.Op)
+		return nil, fmt.Errorf("unsupported type: %s", lv.Kind())
 	}
 }
 
-// TODO: Use generics to simplify the code
-
-func applyOperation[T any](left, right interface{}, op func(T, T) interface{}) (interface{}, error) {
-	l, ok := left.(T)
-	if !ok {
-		return nil, fmt.Errorf("unsupported left operand type: %T", left)
+func applyIntOp(left, right int64, op token.Token) (interface{}, error) {
+	switch op {
+	case token.ADD:
+		return left + right, nil
+	case token.SUB:
+		return left - right, nil
+	case token.MUL:
+		return left * right, nil
+	case token.QUO:
+		if right == 0 {
+			return nil, fmt.Errorf("division by zero")
+		}
+		return left / right, nil
+	case token.EQL:
+		return left == right, nil
+	case token.NEQ:
+		return left != right, nil
+	case token.LSS:
+		return left < right, nil
+	case token.GTR:
+		return left > right, nil
+	default:
+		return nil, fmt.Errorf("unsupported operator for ints: %v", op)
 	}
-	r, ok := right.(T)
-	if !ok {
-		return nil, fmt.Errorf("unsupported right operand type: %T", right)
+}
+
+func applyFloatOp(left, right float64, op token.Token) (interface{}, error) {
+	switch op {
+	case token.ADD:
+		return left + right, nil
+	case token.SUB:
+		return left - right, nil
+	case token.MUL:
+		return left * right, nil
+	case token.QUO:
+		if right == 0.0 {
+			return nil, fmt.Errorf("division by zero")
+		}
+		return left / right, nil
+	case token.EQL:
+		return left == right, nil
+	case token.NEQ:
+		return left != right, nil
+	case token.LSS:
+		return left < right, nil
+	case token.GTR:
+		return left > right, nil
+	default:
+		return nil, fmt.Errorf("unsupported operator for floats: %v", op)
 	}
-	return op(l, r), nil
 }
 
-func add(left, right interface{}) (interface{}, error) {
-	return applyOperation(left, right, func(l, r int64) interface{} {
-		return l + r
-	})
-}
-
-func sub(left, right interface{}) (interface{}, error) {
-	return applyOperation(left, right, func(l, r int64) interface{} {
-		return l - r
-	})
-}
-
-func mul(left, right interface{}) (interface{}, error) {
-	return applyOperation(left, right, func(l, r int64) interface{} {
-		return l * r
-	})
-}
-
-func quo(left, right interface{}) (interface{}, error) {
-	return applyOperation(left, right, func(l, r int64) interface{} {
-		return l / r
-	})
-}
-
-func eql(left, right interface{}) (interface{}, error) {
-	return applyOperation(left, right, func(l, r int64) interface{} {
-		return l == r
-	})
-}
-
-func lss(left, right interface{}) (interface{}, error) {
-	return applyOperation(left, right, func(l, r int64) interface{} {
-		return l < r
-	})
-}
-
-func gtr(left, right interface{}) (interface{}, error) {
-	return applyOperation(left, right, func(l, r int64) interface{} {
-		return l > r
-	})
-}
-
-func neq(left, right interface{}) (interface{}, error) {
-	return applyOperation(left, right, func(l, r int64) interface{} {
-		return l != r
-	})
+func applyStringOp(left, right string, op token.Token) (interface{}, error) {
+	switch op {
+	case token.ADD:
+		return left + right, nil
+	case token.EQL:
+		return left == right, nil
+	case token.NEQ:
+		return left != right, nil
+	case token.LSS:
+		return left < right, nil
+	case token.GTR:
+		return left > right, nil
+	default:
+		return nil, fmt.Errorf("unsupported operator for strings: %v", op)
+	}
 }

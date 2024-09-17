@@ -22,7 +22,7 @@ func TestEvalExpressions(t *testing.T) {
 		{"5 < 2", false},
 		{"3 == 3", true},
 		{"3 != 4", true},
-		// {`"hello" + " " + "world"`, "hello world"},
+		{`"hello" + " " + "world"`, "hello world"},
 	}
 
 	for _, tt := range tests {

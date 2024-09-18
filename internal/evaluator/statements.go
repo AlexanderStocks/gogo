@@ -30,8 +30,8 @@ func evalStmt(stmt ast.Stmt, fset *token.FileSet, env *runtime.Environment) erro
 		return evalAssignStmt(s, fset, env)
 	case *ast.DeclStmt:
 		return evalDeclStmt(s, fset, env)
-	// case *ast.IfStmt:
-	// 	return evalIfStmt(s, fset, env)
+	case *ast.IfStmt:
+		return evalIfStmt(s, fset, env)
 	// case *ast.ForStmt:
 	// 	return evalForStmt(s, fset, env)
 	default:

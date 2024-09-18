@@ -10,9 +10,10 @@ import (
 
 func TestRunFile(t *testing.T) {
 	testFiles := []string{
-		"../../testdata/test1.go",
-		"../../testdata/test2.go",
-		// "../../testdata/test3.go",
+		"../../testdata/test_println.go",
+		"../../testdata/test_assignment.go",
+		"../../testdata/test_if.go",
+		// "../../testdata/test_for.go",
 	}
 
 	for _, file := range testFiles {

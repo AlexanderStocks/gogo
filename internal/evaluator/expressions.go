@@ -14,7 +14,12 @@ func evalExpr(expr ast.Expr, fset *token.FileSet, env *runtime.Environment) (int
 	case *ast.BasicLit:
 		return evalBasicLit(e)
 	case *ast.Ident:
-		if e.Name == "println" {
+		switch e.Name {
+		case "true":
+			return true, nil
+		case "false":
+			return false, nil
+		case "println":
 			return func(args ...interface{}) (interface{}, error) {
 				fmt.Println(args...)
 				return nil, nil
